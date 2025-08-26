@@ -16,10 +16,10 @@ public class HexGrid : MonoBehaviour
         {
             for (int x = 0; x < Width; x++)
             {
-                Vector3 center = HexGridHelper.Center(HexSize, x, z, Direction) + transform.position;
+                Vector3 center = GridHelper.HexCenter(HexSize, x, z, Direction) + transform.position;
                 Gizmos.color = Color.green;
                 
-                Vector3[] corners = HexGridHelper.Corners(HexSize, Direction);
+                Vector3[] corners = GridHelper.HexCorners(HexSize, Direction);
                 for (int i = 0; i < corners.Length; i++)
                 {
                     Gizmos.DrawLine(

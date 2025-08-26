@@ -3,8 +3,9 @@ using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 
-public static class HexGridHelper
+public static class GridHelper
 {
+    #region Hex Helpers
     public static float OuterRadius(float hexSize)
     {
         return hexSize;
@@ -30,7 +31,7 @@ public static class HexGridHelper
         }
     }
 
-    public static Vector3 Corner(float hexSize, HexDirection direction, int index)
+    public static Vector3 HexCorner(float hexSize, HexDirection direction, int index)
     {
         float angle = 60f * index;
         if (direction == HexDirection.PointyTop)
@@ -45,22 +46,22 @@ public static class HexGridHelper
         return corner;
     }
 
-    public static Vector3[] Corners(float hexSize, HexDirection direction)
+    public static Vector3[] HexCorners(float hexSize, HexDirection direction)
     {
         Vector3[] corners = new Vector3[6];
         for (int i = 0; i < 6; i++)
         {
-            corners[i] = Corner(hexSize, direction, i);
+            corners[i] = HexCorner(hexSize, direction, i);
         }
         return corners;
     }
 
-    public static Vector3 Center(float hexSize, int x, int z, HexDirection direction)
+    public static Vector3 HexCenter(float hexSize, int x, int z, HexDirection direction)
     {
         Vector3 centerPosition;
         if (direction == HexDirection.PointyTop)
         {
-            centerPosition.x = (x + z * 0.5f - z / 2) * InnerRadius(hexSize) * 2f;
+            centerPosition.x = (x + (z * 0.5f) - (z / 2)) * InnerRadius(hexSize) * 2f;
             centerPosition.y = 0;
             centerPosition.z = z * (OuterRadius(hexSize) * 1.5f);
         }
@@ -68,8 +69,32 @@ public static class HexGridHelper
         {
             centerPosition.x = x * OuterRadius(hexSize) * 1.5f;
             centerPosition.y = 0;
-            centerPosition.z = (z + x * 0.5f - x / 2) * InnerRadius(hexSize) * 2f;
+            centerPosition.z = (z + (x * 0.5f) - (x / 2)) * InnerRadius(hexSize) * 2f;
         }
         return centerPosition;
     }
+    #endregion
+
+    #region Square Helpers
+
+    public static Vector3 SquareCenter(float squareSize, int iX, int iZ)
+    {
+        float centerX = (iX + 0.5f) * squareSize;
+        float centerZ = (iZ + 0.5f) * squareSize;
+        return new Vector3(centerX, 0, centerZ);
+    }
+
+    public static Vector3[] SquareCorners(float squareSize)
+    {
+        float halfSize = squareSize / 2;
+        return new Vector3[]
+        {
+            new Vector3(-halfSize, 0, -halfSize),
+            new Vector3(halfSize, 0, -halfSize),
+            new Vector3(halfSize, 0, halfSize),
+            new Vector3(-halfSize, 0, halfSize)
+        };
+    }
+
+    #endregion
 }
