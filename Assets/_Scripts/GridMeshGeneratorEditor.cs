@@ -18,5 +18,15 @@ public class GridMeshGeneratorEditor : Editor
         {
             gridMeshGenerator.ClearHexGridMesh();
         }
+
+        if (GUILayout.Button("Create Square Mesh"))
+        {
+            gridMeshGenerator.CreateSquareMesh();
+        }
+
+        if (GUILayout.Button("Clear Square Mesh"))
+        {
+            gridMeshGenerator.ClearSquareGridMesh();
+        }
     }
 }

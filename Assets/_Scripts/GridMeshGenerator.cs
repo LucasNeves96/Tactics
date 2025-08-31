@@ -7,11 +7,15 @@ public class GridMeshGenerator : MonoBehaviour
 
     [field: SerializeField] public LayerMask gridLayer { get; private set; }
     [field: SerializeField] public HexGrid hexGrid { get; private set; }
+    [field: SerializeField] public SquareGrid squareGrid { get; private set; }
 
     private void Awake()
     {
         if (hexGrid == null) hexGrid = GetComponentInParent<HexGrid>();
         if (hexGrid == null) Debug.LogError("HexGrid not found in the scene.");
+        if (squareGrid == null) squareGrid = GetComponentInParent<SquareGrid>();
+        Debug.Log($"SquareGrid: {squareGrid}");
+        if (squareGrid == null) Debug.LogError("SquareGrid not found in the scene.");
     }
 
     public void ClearHexGridMesh()
@@ -95,5 +99,72 @@ public class GridMeshGenerator : MonoBehaviour
             layerIndex++;
         }
         return layerIndex;
+    }
+
+    public void ClearSquareGridMesh()
+    {
+        if (GetComponent<MeshFilter>().sharedMesh == null)
+            return;
+        GetComponent<MeshFilter>().sharedMesh.Clear();
+        GetComponent<MeshCollider>().sharedMesh.Clear();
+    }
+
+    public void CreateSquareMesh()
+    {
+        CreateSquareMesh(squareGrid.Width, squareGrid.Height, squareGrid.SquareSize, gridLayer);
+    }
+
+    public void CreateSquareMesh(SquareGrid squareGrid, LayerMask layerMask)
+    {
+        this.squareGrid = squareGrid;
+        this.gridLayer = layerMask;
+        CreateSquareMesh(squareGrid.Width, squareGrid.Height, squareGrid.SquareSize, layerMask);
+    }
+
+    public void CreateSquareMesh(int width, int height, float cellSize, LayerMask layerMask)
+    {
+        ClearSquareGridMesh();
+        Debug.Log($"Creating Square Mesh: Width={width}, Height={height}, CellSize={cellSize}");
+        Vector3[] vertices = new Vector3[(width + 1) * (height + 1)];
+
+        for (int z = 0; z <= height; z++)
+        {
+            for (int x = 0; x <= width; x++)
+            {
+                vertices[x + (z * (width + 1))] = new Vector3(x * cellSize, 0, z * cellSize);
+                Debug.Log($" Vertex {x + (z * (width + 1))}: {vertices[x + (z * (width + 1))]}");
+            }
+        }
+
+        int[] triangles = new int[width * height * 6];
+        for (int z = 0; z < height; z++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                int squareIndex = x + z * width;
+                triangles[squareIndex * 6 + 0] = x + z * (width + 1);
+                triangles[squareIndex * 6 + 1] = x + (z + 1) * (width + 1);
+                triangles[squareIndex * 6 + 2] = (x + 1) + z * (width + 1);
+                triangles[squareIndex * 6 + 3] = (x + 1) + z * (width + 1);
+                triangles[squareIndex * 6 + 4] = x + (z + 1) * (width + 1);
+                triangles[squareIndex * 6 + 5] = (x + 1) + (z + 1) * (width + 1);
+            Debug.Log($" Square {squareIndex}: Triangles: {triangles[squareIndex * 6 + 0]}, {triangles[squareIndex * 6 + 1]}, {triangles[squareIndex * 6 + 2]}, {triangles[squareIndex * 6 + 3]}, {triangles[squareIndex * 6 + 4]}, {triangles[squareIndex * 6 + 5]}");
+            }
+        }
+
+        Mesh mesh = new Mesh();
+        mesh.name = "SquareMesh";
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+        mesh.Optimize();
+        mesh.RecalculateUVDistributionMetrics();
+
+        GetComponent<MeshFilter>().sharedMesh = mesh;
+        GetComponent<MeshCollider>().sharedMesh = mesh;
+
+        int gridLayerIndex = GetLayerIndex(layerMask);
+        gameObject.layer = gridLayerIndex;
     }
 }
