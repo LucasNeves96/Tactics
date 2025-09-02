@@ -73,6 +73,43 @@ public static class GridHelper
         }
         return centerPosition;
     }
+
+    public static Vector3 HexOffsetToCube(int col, int row, HexDirection orientation)
+    {
+        if (orientation == HexDirection.PointyTop)
+        {
+            return HexAxialToCube(OffsetToAxialPointy(col, row));
+        }
+        else
+        {
+            return HexAxialToCube(OffsetToAxialFlat(col, row));
+        }
+    }
+
+    public static Vector3 HexAxialToCube(Vector2Int axial)
+    {       
+        float x = axial.x;
+        float z = axial.y;
+        float y = -x - z;
+
+        return new Vector3(x, z, y);
+    }
+
+    public static Vector2Int OffsetToAxialFlat(int col, int row)
+    {
+        int q = col;
+        int r = row - (col + (col & 1)) / 2;
+        
+        return new Vector2Int(q, r);
+    }
+
+    public static Vector2Int OffsetToAxialPointy(int col, int row)
+    {
+        int q = col - (row + (row & 1)) / 2;
+        int r = row;
+        return new Vector2Int(q, r);
+    }
+
     #endregion
 
     #region Square Helpers

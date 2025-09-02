@@ -14,7 +14,6 @@ public class GridMeshGenerator : MonoBehaviour
         if (hexGrid == null) hexGrid = GetComponentInParent<HexGrid>();
         if (hexGrid == null) Debug.LogError("HexGrid not found in the scene.");
         if (squareGrid == null) squareGrid = GetComponentInParent<SquareGrid>();
-        Debug.Log($"SquareGrid: {squareGrid}");
         if (squareGrid == null) Debug.LogError("SquareGrid not found in the scene.");
     }
 
@@ -84,7 +83,6 @@ public class GridMeshGenerator : MonoBehaviour
         GetComponent<MeshCollider>().sharedMesh = mesh;
 
         int gridLayerIndex = GetLayerIndex(layerMask);
-        Debug.Log($"Grid Layer Index: {gridLayerIndex}");
 
         gameObject.layer = gridLayerIndex;
     }
@@ -124,7 +122,6 @@ public class GridMeshGenerator : MonoBehaviour
     public void CreateSquareMesh(int width, int height, float cellSize, LayerMask layerMask)
     {
         ClearSquareGridMesh();
-        Debug.Log($"Creating Square Mesh: Width={width}, Height={height}, CellSize={cellSize}");
         Vector3[] vertices = new Vector3[(width + 1) * (height + 1)];
 
         for (int z = 0; z <= height; z++)
@@ -132,7 +129,6 @@ public class GridMeshGenerator : MonoBehaviour
             for (int x = 0; x <= width; x++)
             {
                 vertices[x + (z * (width + 1))] = new Vector3(x * cellSize, 0, z * cellSize);
-                Debug.Log($" Vertex {x + (z * (width + 1))}: {vertices[x + (z * (width + 1))]}");
             }
         }
 
@@ -148,7 +144,6 @@ public class GridMeshGenerator : MonoBehaviour
                 triangles[squareIndex * 6 + 3] = (x + 1) + z * (width + 1);
                 triangles[squareIndex * 6 + 4] = x + (z + 1) * (width + 1);
                 triangles[squareIndex * 6 + 5] = (x + 1) + (z + 1) * (width + 1);
-            Debug.Log($" Square {squareIndex}: Triangles: {triangles[squareIndex * 6 + 0]}, {triangles[squareIndex * 6 + 1]}, {triangles[squareIndex * 6 + 2]}, {triangles[squareIndex * 6 + 3]}, {triangles[squareIndex * 6 + 4]}, {triangles[squareIndex * 6 + 5]}");
             }
         }
 

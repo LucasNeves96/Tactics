@@ -9,7 +9,6 @@ public class HexGrid : MonoBehaviour
     [field: SerializeField] public GameObject HexPrefab { get; private set; }
     [field: SerializeField] public HexDirection Direction { get; private set; } = HexDirection.FlatTop;
 
-
     private void OnDrawGizmos()
     {
         for (int z = 0; z < Height; z++)
