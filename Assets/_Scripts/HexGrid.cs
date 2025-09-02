@@ -14,11 +14,12 @@ public class HexGrid : MonoBehaviour
     private float lastHexSize;
     private Vector3[] hexCorners;
     private HexDirection lastHexDirection;
+    private const int HEX_SIDES = 6;
 
     private void OnDrawGizmos()
     {
-        if(!drawGizmos) return;
-        
+        if (!drawGizmos) return;
+
         if (lastHexDirection != Direction ||
             lastHexWidth != Width ||
             lastHexHeight != Height ||
@@ -34,9 +35,9 @@ public class HexGrid : MonoBehaviour
 
         for (int i = 0; i < hexCorners.Length - 1; i++)
         {
-            if ((i + 1) % 6 == 0)
+            if ((i + 1) % HEX_SIDES == 0)
             {
-                Gizmos.DrawLine(hexCorners[i], hexCorners[i - 5]); // close the hexagon
+                Gizmos.DrawLine(hexCorners[i], hexCorners[i - (HEX_SIDES-1)]); // close the hexagon
             }
             else
             {
@@ -47,7 +48,7 @@ public class HexGrid : MonoBehaviour
 
     private void UpdateHexGrid()
     {
-        hexCorners = new Vector3[6 * Width * Height + 1];
+        hexCorners = new Vector3[HEX_SIDES * Width * Height + 1];
         for (int z = 0; z < Height; z++)
         {
             for (int x = 0; x < Width; x++)
@@ -58,7 +59,8 @@ public class HexGrid : MonoBehaviour
                 Vector3[] corners = GridHelper.HexCorners(HexSize, Direction);
                 for (int i = 0; i < corners.Length; i++)
                 {
-                    hexCorners[(z*Width*6) + (x*6) + i] = center + corners[i];
+                    hexCorners[(z * Width * HEX_SIDES) + (x * HEX_SIDES) + i] = center + corners[i];
+                    
                 }
             }
         }
