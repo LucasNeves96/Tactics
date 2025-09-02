@@ -19,8 +19,8 @@ public class HexGridEditor : Editor
 
                 Vector3 cubeCoord = GridHelper.HexOffsetToCube(centerX, centerZ, hexGrid.Direction);
                 Handles.color = Color.red;
-                Handles.Label(centrePosition + Vector3.forward * 0.5f, $"[{centerX}, {centerZ}]");
-                Handles.Label(centrePosition, $"({cubeCoord.x},{cubeCoord.y},{cubeCoord.z})");
+                Handles.Label(centrePosition + Vector3.forward * hexGrid.HexSize/4, $"[{centerX}, {centerZ}]", new GUIStyle() { alignment = TextAnchor.MiddleCenter });
+                Handles.Label(centrePosition, $"({cubeCoord.x},{cubeCoord.y},{cubeCoord.z})", new GUIStyle() { alignment = TextAnchor.MiddleCenter });
             }
         }
     }

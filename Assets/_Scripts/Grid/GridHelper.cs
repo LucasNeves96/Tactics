@@ -87,7 +87,7 @@ public static class GridHelper
     }
 
     public static Vector3 HexAxialToCube(Vector2Int axial)
-    {       
+    {
         float x = axial.x;
         float z = axial.y;
         float y = -x - z;
@@ -99,7 +99,7 @@ public static class GridHelper
     {
         int q = col;
         int r = row - (col + (col & 1)) / 2;
-        
+
         return new Vector2Int(q, r);
     }
 
@@ -131,6 +131,19 @@ public static class GridHelper
             new Vector3(halfSize, 0, halfSize),
             new Vector3(-halfSize, 0, halfSize)
         };
+    }
+    public static Vector3 SquareOffsetToCube(int col, int row)
+    {
+        return SquareAxialToCube(new Vector2Int(col, row));
+    }
+
+    public static Vector3 SquareAxialToCube(Vector2Int axial)
+    {
+        float x = axial.x;
+        float z = axial.y;
+        float y = - x - z;
+
+        return new Vector3(x, z, y);
     }
 
     #endregion
