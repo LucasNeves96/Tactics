@@ -4,11 +4,11 @@ using UnityEngine;
 [CustomEditor(typeof(HexGrid))]
 public class HexGridEditor : Editor
 {
+    private HexGrid hexGrid => target as HexGrid;
     void OnSceneGUI()
     {
-        HexGrid hexGrid = target as HexGrid;
-
-        for(int z = 0; z < hexGrid.Height; z++)
+        if (!hexGrid || !hexGrid.drawPositions) return;
+        for (int z = 0; z < hexGrid.Height; z++)
         {
             for (int x = 0; x < hexGrid.Width; x++)
             {
