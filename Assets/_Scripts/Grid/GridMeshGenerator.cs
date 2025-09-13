@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
@@ -105,6 +104,50 @@ public class GridMeshGenerator : MonoBehaviour
             return;
         GetComponent<MeshFilter>().sharedMesh.Clear();
         GetComponent<MeshCollider>().sharedMesh.Clear();
+    }
+
+    public void CreateSquarePrefabGrid()
+    {
+        CreateSquarePrefabGrid(squareGrid.Width, squareGrid.Height, squareGrid.SquareSize, squareGrid.SquarePrefab);
+    }
+
+    public void CreateSquarePrefabGrid(int width, int height, float cellSize, GameObject squarePrefab)
+    {
+        if (squarePrefab == null)
+        {
+            Debug.LogError("Square Prefab is not assigned.");
+            return;
+        }
+
+        Debug.Log($"There's currently {transform.childCount} children under {name}.");
+
+        ClearExistingSquareChildren();
+
+        for (int z = 0; z < height; z++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                float cubeToGroundLevel = cellSize / 2;
+                Vector3 squareCenter = GridHelper.SquareCenter(cellSize, x, z);
+                squareCenter.y += cubeToGroundLevel; // Adjust y to place the cube on the ground
+                Quaternion rotation = Quaternion.Euler(-90, 0, 0); // The cube prefab is rotated to lie flat on the ground
+                GameObject squareInstance = Instantiate(squarePrefab, squareCenter, rotation, squareGrid.transform);
+                squareInstance.name = $"Square_{x}_{z}";
+                Debug.Log($"Created {squareInstance.name} at {squareCenter}");
+                squareInstance.layer = GetLayerIndex(gridLayer);
+                // Optionally, adjust the scale of the instantiated prefab to match cellSize
+                float calculatedScale = cellSize;
+                squareInstance.transform.localScale = new Vector3(calculatedScale, calculatedScale, calculatedScale);
+            }
+        }
+    }
+
+    public void ClearExistingSquareChildren()
+    {
+        for (int i = squareGrid.transform.childCount - 1; i >= 0; i--)
+        {
+            DestroyImmediate(transform.GetChild(i).gameObject);
+        }
     }
 
     public void CreateSquareMesh()

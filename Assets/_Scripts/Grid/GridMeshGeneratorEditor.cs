@@ -8,6 +8,8 @@ public class GridMeshGeneratorEditor : Editor
     {
         DrawDefaultInspector();
 
+        GUILayout.Space(10);
+
         GridMeshGenerator gridMeshGenerator = (GridMeshGenerator)target;
         if (GUILayout.Button("Create Hex Mesh"))
         {
@@ -19,6 +21,8 @@ public class GridMeshGeneratorEditor : Editor
             gridMeshGenerator.ClearHexGridMesh();
         }
 
+        GUILayout.Space(10);
+
         if (GUILayout.Button("Create Square Mesh"))
         {
             gridMeshGenerator.CreateSquareMesh();
@@ -27,6 +31,18 @@ public class GridMeshGeneratorEditor : Editor
         if (GUILayout.Button("Clear Square Mesh"))
         {
             gridMeshGenerator.ClearSquareGridMesh();
+        }
+
+        GUILayout.Space(10);
+
+        if (GUILayout.Button("Create Cube Grid"))
+        {
+            gridMeshGenerator.CreateSquarePrefabGrid();
+        }
+
+        if (GUILayout.Button("Clear Existing Cube Grid"))
+        {
+            gridMeshGenerator.ClearExistingSquareChildren();
         }
     }
 }

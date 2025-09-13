@@ -1,11 +1,23 @@
+using System;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements.Experimental;
 
 public class SquareGrid : MonoBehaviour
 {
-    [field: SerializeField] public int Width { get; private set; } = 10;
-    [field: SerializeField] public int Height { get; private set; } = 10;
+    [SerializeField][Range(1, 15)] private int width = 10;
+    public int Width
+    {
+        get => width;
+        private set => width = value;
+    }
+    [SerializeField][Range(1, 15)] private int height = 10;
+    public int Height
+    {
+        get => height;
+        private set => height = value;
+    }
     [field: SerializeField] public float SquareSize { get; private set; } = 10;
     [field: SerializeField] public GameObject SquarePrefab { get; private set; }
     [SerializeField] private bool drawGizmos = true;

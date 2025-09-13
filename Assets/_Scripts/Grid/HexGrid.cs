@@ -3,8 +3,18 @@ using UnityEngine.InputSystem;
 
 public class HexGrid : MonoBehaviour
 {
-    [field: SerializeField] public int Width { get; private set; } = 10;
-    [field: SerializeField] public int Height { get; private set; } = 10;
+    [SerializeField][Range(1, 15)] private int width = 10;
+    public int Width
+    {
+        get => width;
+        private set => width = value;
+    }
+    [SerializeField][Range(1, 15)] private int height = 10;
+    public int Height
+    {
+        get => height;
+        private set => height = value;
+    }
     [field: SerializeField] public float HexSize { get; private set; } = 10;
     [field: SerializeField] public GameObject HexPrefab { get; private set; }
     [field: SerializeField] public HexDirection Direction { get; private set; } = HexDirection.FlatTop;
