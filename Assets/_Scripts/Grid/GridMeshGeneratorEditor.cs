@@ -40,6 +40,11 @@ public class GridMeshGeneratorEditor : Editor
             gridMeshGenerator.CreateSquarePrefabGrid();
         }
 
+        if (GUILayout.Button("Move Cubes Sin"))
+        {
+            gridMeshGenerator.ToggleMoveSquaresSin();
+        }
+
         if (GUILayout.Button("Clear Existing Cube Grid"))
         {
             gridMeshGenerator.ClearExistingSquareChildren();

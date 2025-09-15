@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
@@ -7,6 +9,13 @@ public class GridMeshGenerator : MonoBehaviour
     [field: SerializeField] public LayerMask gridLayer { get; private set; }
     [field: SerializeField] public HexGrid hexGrid { get; private set; }
     [field: SerializeField] public SquareGrid squareGrid { get; private set; }
+    [SerializeField] private float amplitude = 0.05f;
+    private Dictionary<string, GameObject> cubeInstanceDic = new Dictionary<string, GameObject>();
+    private bool isMovingSquares = false;
+    private int createdWidth = 0;
+    private int createdHeight = 0;
+    private float createdSize = 0f;
+    private float startTime = 0f;
 
     private void Awake()
     {
@@ -14,6 +23,11 @@ public class GridMeshGenerator : MonoBehaviour
         if (hexGrid == null) Debug.LogError("HexGrid not found in the scene.");
         if (squareGrid == null) squareGrid = GetComponentInParent<SquareGrid>();
         if (squareGrid == null) Debug.LogError("SquareGrid not found in the scene.");
+    }
+
+    public void Update()
+    {
+        if (isMovingSquares) MoveSquaresSinCos();
     }
 
     public void ClearHexGridMesh()
@@ -119,25 +133,30 @@ public class GridMeshGenerator : MonoBehaviour
             return;
         }
 
-        Debug.Log($"There's currently {transform.childCount} children under {name}.");
-
         ClearExistingSquareChildren();
+        
+        createdHeight = height;
+        createdWidth = width;
+        createdSize = squareGrid.SquareSize;
 
         for (int z = 0; z < height; z++)
         {
             for (int x = 0; x < width; x++)
             {
                 float cubeToGroundLevel = cellSize / 2;
+
                 Vector3 squareCenter = GridHelper.SquareCenter(cellSize, x, z);
                 squareCenter.y += cubeToGroundLevel; // Adjust y to place the cube on the ground
                 Quaternion rotation = Quaternion.Euler(-90, 0, 0); // The cube prefab is rotated to lie flat on the ground
                 GameObject squareInstance = Instantiate(squarePrefab, squareCenter, rotation, squareGrid.transform);
-                squareInstance.name = $"Square_{x}_{z}";
-                Debug.Log($"Created {squareInstance.name} at {squareCenter}");
+                squareInstance.name = $"Square_{x}-{z}";
                 squareInstance.layer = GetLayerIndex(gridLayer);
-                // Optionally, adjust the scale of the instantiated prefab to match cellSize
                 float calculatedScale = cellSize;
                 squareInstance.transform.localScale = new Vector3(calculatedScale, calculatedScale, calculatedScale);
+
+                string key = $"{x}-{z}";
+                if (!cubeInstanceDic.ContainsKey(key)) cubeInstanceDic.Add(key, squareInstance);
+                else Debug.LogWarning($"Square instance at {key} already exists in the dictionary.");
             }
         }
     }
@@ -147,6 +166,44 @@ public class GridMeshGenerator : MonoBehaviour
         for (int i = squareGrid.transform.childCount - 1; i >= 0; i--)
         {
             DestroyImmediate(transform.GetChild(i).gameObject);
+        }
+        cubeInstanceDic.Clear();
+
+        createdHeight = 0;
+        createdWidth = 0;
+
+        isMovingSquares = false;
+    }
+
+    public void ToggleMoveSquaresSin()
+    {
+        isMovingSquares = !isMovingSquares;
+        if (isMovingSquares) startTime = Time.time;
+        Debug.Log($"Toggling MoveSquaresSin. Currently moving: {isMovingSquares}");
+    }
+
+    public void MoveSquaresSinCos()
+    {
+        if (cubeInstanceDic.Count == 0)
+        {
+            Debug.LogWarning("No square instances to move. Creating new ones");
+            ClearExistingSquareChildren();
+            CreateSquarePrefabGrid();
+            isMovingSquares = true;
+            startTime = Time.time;
+        }
+        
+        float elapsedTime = Time.time - startTime;
+
+        foreach (var cube in cubeInstanceDic)
+        {
+            GameObject square = cube.Value;
+            Vector3 newPosition = square.transform.position;
+            float posToSin = Mathf.Sin((elapsedTime * 2f) + (newPosition.x / createdWidth * 2f * Mathf.PI));
+            float posToCos = Mathf.Cos((elapsedTime * 2f) + (newPosition.z / createdHeight * 2f * Mathf.PI));
+            float dislocation = amplitude * (posToSin + posToCos);
+            newPosition.y = createdSize + dislocation;
+            square.transform.position = newPosition;
         }
     }
 
